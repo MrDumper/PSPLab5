@@ -14,6 +14,8 @@ public class ListManagmentApp extends JFrame{
     private JList<String> nameList;
     private JList<String> patronymicList;
     private JTextField inputField;
+    private JTextField reasonField;
+    private JTextField doctorsField;
 
     public ListManagmentApp() {
         super("Управление списками");
@@ -27,8 +29,10 @@ public class ListManagmentApp extends JFrame{
         nameList = new JList<>(nameListModel);
         patronymicList = new JList<>(patronymicListModel);
 
-        // Создание компонента ввода
+        // Создание компонентов ввода
         inputField = new JTextField();
+        reasonField = new JTextField();
+        doctorsField = new JTextField();
 
         // Создание кнопки
         JButton addButton = new JButton("Добавить");
@@ -43,15 +47,20 @@ public class ListManagmentApp extends JFrame{
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addButton);
 
+        // Создание панели с компонентами ввода
+        JPanel inputPanel = new JPanel(new GridLayout(4, 2));
+        inputPanel.add(new JLabel("Фамилия:"));
+        inputPanel.add(inputField);
+        inputPanel.add(new JLabel("Причина посещения:"));
+        inputPanel.add(reasonField);
+        inputPanel.add(new JLabel("Необходимые врачи:"));
+        inputPanel.add(doctorsField);
+
         // Создание панели со списками
         JPanel listPanel = new JPanel(new GridLayout(1, 3));
         listPanel.add(new JScrollPane(surnameList));
         listPanel.add(new JScrollPane(nameList));
         listPanel.add(new JScrollPane(patronymicList));
-
-        // Создание панели с компонентами ввода
-        JPanel inputPanel = new JPanel(new BorderLayout());
-        inputPanel.add(inputField, BorderLayout.CENTER);
 
         // Создание основной панели и компоновка элементов
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -76,6 +85,8 @@ public class ListManagmentApp extends JFrame{
                 String surname = parts[0];
                 String name = parts[1];
                 String patronymic = parts[2];
+                String reason = reasonField.getText();
+                String doctors = doctorsField.getText();
 
                 surnameListModel.addElement(surname);
                 nameListModel.addElement(name);
@@ -83,6 +94,16 @@ public class ListManagmentApp extends JFrame{
 
                 // Обновление отсортированного списка
                 updateSortedListModel();
+
+                // Очистка полей ввода
+                inputField.setText("");
+                reasonField.setText("");
+                doctorsField.setText("");
+
+                // Вывод информации о бронировании
+                JOptionPane.showMessageDialog(this, "Талон успешно забронирован!\n" +
+                        "Причина посещения: " + reason + "\n" +
+                        "Необходимые врачи: " + doctors, "Бронирование талона", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "Неверный формат ввода!", "Ошибка", JOptionPane.ERROR_MESSAGE);
             }
@@ -99,7 +120,10 @@ public class ListManagmentApp extends JFrame{
         Collections.sort(surnames);
 
         for (String surname : surnames) {
-            sortedListModel.addElement(surname);
+            int index = surnameListModel.indexOf(surname);
+            String name = nameListModel.getElementAt(index);
+            String patronymic = patronymicListModel.getElementAt(index);
+            sortedListModel.addElement(surname + " " + name + " " + patronymic);
         }
     }
 
